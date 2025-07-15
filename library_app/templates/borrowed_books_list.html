@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Borrowed Books List</h2>
+
+  <table>
+    <tr>
+      <th>Member</th>
+      <th>Book</th>
+      <th>Borrow Date</th>
+      <th>Return Status</th>
+      <th>Actions</th>
+    </tr>
+    {% for book in borrowed_books %}
+    <tr>
+      <td>{{ book.member.fullname }}</td>
+      <td>{{ book.book.title }}</td>
+      <td>{{ book.borrowdate }}</td>
+      <td>
+        {% if book.is_returned %}
+          Returned on {{ book.returndate }}
+        {% else %}
+          Not Returned
+        {% endif %}
+      </td>
+      <td>
+        {% if not book.is_returned %}
+          <a href="{% url 'return_book' book.id %}">Return Book</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

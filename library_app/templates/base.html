@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="{% url 'home' %}">🏠 Home</a>
+    <a href="{% url 'add_book' %}">📚 Add Book</a>
+    <a href="{% url 'add_member' %}">👤 Add Member</a>
+    <a href="{% url 'add_BorrowedBook' %}">📖 Borrow Book</a>
+    <a href="{% url 'borrowed_books_list' %}">📋 Borrowed Books</a>
+</nav>
+
+<div class="container">
+    {% block content %}
+    <!-- Page content goes here -->
+    {% endblock %}
+</div>
+
+</body>
+</html>
