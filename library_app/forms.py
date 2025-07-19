@@ -15,3 +15,8 @@ class BorrowedBookForm(forms.ModelForm):
     class Meta:
         model = BorrowedBook
         fields = '__all__'
+        widgets = {
+            'borrowdate': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+        

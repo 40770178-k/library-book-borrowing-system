@@ -1,34 +1,46 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Borrowed Books List</h2>
+  <div class="container mt-4">
+    <h2>Borrowed Books List</h2>
 
-  <table>
-    <tr>
-      <th>Member</th>
-      <th>Book</th>
-      <th>Borrow Date</th>
-      <th>Return Status</th>
-      <th>Actions</th>
-    </tr>
-    {% for book in borrowed_books %}
-    <tr>
-      <td>{{ book.member.fullname }}</td>
-      <td>{{ book.book.title }}</td>
-      <td>{{ book.borrowdate }}</td>
-      <td>
-        {% if book.is_returned %}
-          Returned on {{ book.returndate }}
-        {% else %}
-          Not Returned
-        {% endif %}
-      </td>
-      <td>
-        {% if not book.is_returned %}
-          <a href="{% url 'return_book' book.id %}">Return Book</a>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
+    {% if borrowed_books %}
+      <table class="table table-bordered table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Book</th>
+            <th>Borrow Date</th>
+            <th>Return Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for book in borrowed_books %}
+            <tr>
+              <td>{{ book.member.fullname }}</td>
+              <td>{{ book.book.title }}</td>
+              <td>{{ book.borrowdate }}</td>
+              <td>
+                {% if book.is_returned %}
+                  Returned on {{ book.returndate }}
+                {% else %}
+                  <span class="text-danger">Not Returned</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not book.is_returned %}
+                  <a href="{% url 'return_book' book.id %}" class="btn btn-sm btn-success">Mark as Returned</a>
+                {% else %}
+                  <span class="text-muted">Completed</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No borrowed books found.</p>
+    {% endif %}
+  </div>
 {% endblock %}

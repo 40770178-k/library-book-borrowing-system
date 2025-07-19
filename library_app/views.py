@@ -33,18 +33,27 @@ def add_member (request):
             
     return render(request,'add_member.html',{'form': form})
         
-def add_BorrowedBook (request):
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import BorrowedBook, Member
+from .forms import BorrowedBookForm
+
+def add_BorrowedBook(request):
     if request.method == 'POST':
         form = BorrowedBookForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('add_BorrowedBook')#reload the page or redirect to a success page
-        
-    
-    else:
-            form = BorrowedBookForm()
+            borrowed_book = form.save(commit=False)
 
-    return render(request,'add_BorrowedBook.html',{'form': form})
+            # Optional: Update available_copies (if logic is needed)
+            borrowed_book.book.available_copies -= 1
+            borrowed_book.book.save()
+
+            borrowed_book.save()
+            return redirect('add_BorrowedBook')  # Reload the same page
+    else:
+        form = BorrowedBookForm()
+
+    return render(request, 'add_BorrowedBook.html', {'form': form})
+
 
 def return_book(request, borrowed_book_id):
     borrowed_book = get_object_or_404(BorrowedBook, id=borrowed_book_id)
