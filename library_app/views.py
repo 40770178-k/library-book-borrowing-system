@@ -3,7 +3,7 @@ from .forms import BookForm,MemberForm,BorrowedBookForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib import messages
-from .models import BorrowedBook
+from .models import BorrowedBook, Book
 
 # Create your views here.
 def home (request):
@@ -69,5 +69,20 @@ def return_book(request, borrowed_book_id):
     return redirect('add_BorrowedBook')
 
 def borrowed_books_list(request):
-     borrowed_books = BorrowedBook.objects.all().order_by('-borrowdate')
+     borrowed_books = BorrowedBook.objects.all().filter(is_returned=False)
+     if not borrowed_books:
+         messages.info(request, "No borrowed books found.")
      return render(request,'borrowed_books_list.html', {'borrowed_books': borrowed_books})
+
+
+def mark_as_returned(request, pk):
+    borrowed=get_object_or_404(BorrowedBook, pk=pk)
+
+    if not borrowed.returned:
+         borrowed.returned = True
+         borrowed.returndate = timezone.now() 
+         borrowed.book.available_copies += 1
+         borrowed.book.save()
+         borrowed.save()
+    
+    return redirect('borrowed_books_list')

@@ -11,26 +11,28 @@
             <th>Member</th>
             <th>Book</th>
             <th>Borrow Date</th>
+            <th>Due Date</th>
             <th>Return Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for book in borrowed_books %}
+          {% for borrow in borrowed_books %}
             <tr>
-              <td>{{ book.member.fullname }}</td>
-              <td>{{ book.book.title }}</td>
-              <td>{{ book.borrowdate }}</td>
+              <td>{{ borrow.member.fullname }}</td>
+              <td>{{ borrow.book.title }}</td>
+              <td>{{ borrow.borrow_date }}</td>
+              <td>{{ borrow.due_date }}</td>
               <td>
-                {% if book.is_returned %}
-                  Returned on {{ book.returndate }}
+                {% if borrow.returned %}
+                  Returned on {{ borrow.return_date|date:"Y-m-d" }}
                 {% else %}
                   <span class="text-danger">Not Returned</span>
                 {% endif %}
               </td>
               <td>
-                {% if not book.is_returned %}
-                  <a href="{% url 'return_book' book.id %}" class="btn btn-sm btn-success">Mark as Returned</a>
+                {% if not borrow.returned %}
+                  <a href="{% url 'mark_as_returned' borrow.pk %}" class="btn btn-sm btn-success">Mark as Returned</a>
                 {% else %}
                   <span class="text-muted">Completed</span>
                 {% endif %}
