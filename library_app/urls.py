@@ -8,4 +8,5 @@ urlpatterns = [
     path('add-BorrowedBook/',views.add_BorrowedBook,name='add_BorrowedBook'),
     path('borrowed-books/',views.borrowed_books_list, name='borrowed_books_list'),
     path('return-book/<int:borrowed_book_id>/', views.return_book, name='return_book'),
+    path('return-book/<int:pk>/', views.mark_as_returned, name='mark_as_returned'),
 ]
