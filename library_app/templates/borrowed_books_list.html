@@ -24,10 +24,14 @@
               <td>{{ borrow.borrow_date }}</td>
               <td>{{ borrow.due_date }}</td>
               <td>
-                {% if borrow.returned %}
-                  Returned on {{ borrow.return_date|date:"Y-m-d" }}
+                {% if book.is_returned %}
+                  Returned on {{ book.returndate }}
                 {% else %}
-                  <span class="text-danger">Not Returned</span>
+                  {% if book.due_date < now %}
+                    <span class="badge bg-danger">Overdue (Due {{ book.due_date|date:"M d" }})</span>
+                  {% else %}
+                    <span class="text-warning">Not Returned (Due {{ book.due_date|date:"M d" }})</span>
+                  {% endif %}
                 {% endif %}
               </td>
               <td>

@@ -1,9 +1,15 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect,get_object_or_404
 from .forms import BookForm,MemberForm,BorrowedBookForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib import messages
-from .models import BorrowedBook, Book
+from .models import BorrowedBook, Book, Member
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import BorrowedBook, Member
+from .forms import BorrowedBookForm
+from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
 def home (request):
@@ -33,9 +39,7 @@ def add_member (request):
             
     return render(request,'add_member.html',{'form': form})
         
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import BorrowedBook, Member
-from .forms import BorrowedBookForm
+
 
 def add_BorrowedBook(request):
     if request.method == 'POST':
@@ -54,10 +58,15 @@ def add_BorrowedBook(request):
 
     return render(request, 'add_BorrowedBook.html', {'form': form})
 
-
+@login_required
 def return_book(request, borrowed_book_id):
+    member = Member.objects.get(email=request.user.email)
     borrowed_book = get_object_or_404(BorrowedBook, id=borrowed_book_id)
-    
+
+    if borrowed_book.member != member:
+        messages.error(request, "You can only return books borrowed by you.")
+        return redirect('borrowed_books_list')
+
     if not borrowed_book.is_returned:
         borrowed_book.is_returned = True
         borrowed_book.returndate = timezone.now()
@@ -68,11 +77,12 @@ def return_book(request, borrowed_book_id):
     
     return redirect('add_BorrowedBook')
 
+
 def borrowed_books_list(request):
-     borrowed_books = BorrowedBook.objects.all().filter(is_returned=False)
+     borrowed_books = BorrowedBook.objects.select_related('member', 'book')
      if not borrowed_books:
          messages.info(request, "No borrowed books found.")
-     return render(request,'borrowed_books_list.html', {'borrowed_books': borrowed_books})
+     return render(request,'borrowed_books_list.html', {'borrowed_books': borrowed_books, 'now': timezone.now()})
 
 
 def mark_as_returned(request, pk):
@@ -86,3 +96,14 @@ def mark_as_returned(request, pk):
          borrowed.save()
     
     return redirect('borrowed_books_list')
+
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect(request.GET.get('next') or 'home')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
