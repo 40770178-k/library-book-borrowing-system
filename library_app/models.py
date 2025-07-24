@@ -28,7 +28,7 @@ class Member(models.Model):
     registration_date=models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return self.fullname
+        return self.user.username if self.user else self.fullname
 
 def default_due_date():
     return timezone.now() + timedelta(days=7)

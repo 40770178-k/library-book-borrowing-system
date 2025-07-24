@@ -10,4 +10,5 @@ urlpatterns = [
     path('return-book/<int:borrowed_book_id>/', views.return_book, name='return_book'),
     path('return-book/<int:pk>/', views.mark_as_returned, name='mark_as_returned'),
     path('login/', views.user_login, name='login'),
+    path('signup/', views.signup_view, name='signup'),
 ]

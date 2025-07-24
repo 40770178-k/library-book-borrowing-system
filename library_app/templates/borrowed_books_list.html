@@ -24,19 +24,22 @@
               <td>{{ borrow.borrow_date }}</td>
               <td>{{ borrow.due_date }}</td>
               <td>
-                {% if book.is_returned %}
-                  Returned on {{ book.returndate }}
+                {% if borrow.is_returned %}
+                  Returned on {{ borrow.returndate }}
                 {% else %}
-                  {% if book.due_date < now %}
-                    <span class="badge bg-danger">Overdue (Due {{ book.due_date|date:"M d" }})</span>
+                  {% if borrow.due_date < now %}
+                    <span class="badge bg-danger">Overdue (Due {{ borrow.due_date|date:"M d" }})</span>
                   {% else %}
-                    <span class="text-warning">Not Returned (Due {{ book.due_date|date:"M d" }})</span>
+                    <span class="text-warning">Not Returned (Due {{ borrow.due_date|date:"M d" }})</span>
                   {% endif %}
                 {% endif %}
               </td>
               <td>
-                {% if not borrow.returned %}
-                  <a href="{% url 'mark_as_returned' borrow.pk %}" class="btn btn-sm btn-success">Mark as Returned</a>
+                {% if not borrow.is_returned and borrow.member.user == request.user %}
+                  <form action="{% url 'return_book' borrow.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">Mark as Returned</button>
+                  </form>
                 {% else %}
                   <span class="text-muted">Completed</span>
                 {% endif %}

@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import BookForm,MemberForm,BorrowedBookForm
+from .forms import BookForm,MemberForm,BorrowedBookForm, signupForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib import messages
@@ -10,6 +10,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import BorrowedBook, Member
 from .forms import BorrowedBookForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 def home (request):
@@ -58,24 +60,33 @@ def add_BorrowedBook(request):
 
     return render(request, 'add_BorrowedBook.html', {'form': form})
 
+@require_POST
 @login_required
 def return_book(request, borrowed_book_id):
-    member = Member.objects.get(email=request.user.email)
+    try:
+        member = Member.objects.get(user=request.user)
+    except Member.DoesNotExist:
+        return redirect('signup')  # Redirect to signup if member does not exist
+
     borrowed_book = get_object_or_404(BorrowedBook, id=borrowed_book_id)
 
     if borrowed_book.member != member:
         messages.error(request, "You can only return books borrowed by you.")
         return redirect('borrowed_books_list')
 
-    if not borrowed_book.is_returned:
-        borrowed_book.is_returned = True
-        borrowed_book.returndate = timezone.now()
-        borrowed_book.save()
-        messages.success(request, f"Book '{borrowed_book.book.title}' returned successfully.")
-    else:
-        messages.error(request, "This book has already been returned.")
-    
-    return redirect('add_BorrowedBook')
+    if request.method == 'POST':
+        if not borrowed_book.is_returned:
+            borrowed_book.is_returned = True
+            borrowed_book.returndate = timezone.now()
+            borrowed_book.save()
+            messages.success(request, f"Book '{borrowed_book.book.title}' returned successfully.")
+        else:
+            messages.error(request, "This book has already been returned.")
+
+        return redirect('add_BorrowedBook')
+
+    return render(request, 'return_book.html', {'book': borrowed_book})
+
 
 
 def borrowed_books_list(request):
@@ -107,3 +118,39 @@ def user_login(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
+
+def signup(request):
+ if request.method == 'POST':
+     form= signupForm(request.POST)
+     if form.is_valid():
+         user= form.save(commit=False)
+         user.set_password(form.cleaned_data['password'])
+         user.save()
+         Member.object.create(user=user)
+         login(request, user)
+         return redirect('home')
+     else:
+        form = signupForm()
+     return render(request, 'signup.html', {'form': form})
+ 
+ from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from .models import Member
+from django.contrib import messages
+
+def signup_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        phonenumber = request.POST['phone']
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already taken.')
+            return redirect('signup')
+
+        user = User.objects.create_user(username=username, password=password)
+        Member.objects.create(user=user, phonenumber=phonenumber)
+        messages.success(request, 'Account created successfully. You can log in.')
+        return redirect('login')  # or wherever your login URL is
+
+    return render(request, 'signup.html')
