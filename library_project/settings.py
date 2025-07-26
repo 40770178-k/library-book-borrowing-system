@@ -121,4 +121,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_URL = '/login/'
+# settings.py
+  # So login_required knows where to send unauthenticated users
+LOGIN_REDIRECT_URL = 'home'  # Or whatever your homepage URL name is
+LOGOUT_REDIRECT_URL = 'login'  # Redirect to login page after logout
+LOGIN_URL = 'login'
