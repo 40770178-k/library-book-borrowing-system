@@ -39,9 +39,7 @@
                   {% if borrow.member.user == request.user %}
                     <form action="{% url 'return_book' borrow.pk %}" method="post" style="display:inline;">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-success">
-                        Mark as Returned
-                      </button>
+                      <button type="submit" class="btn btn-sm btn-success"> Mark as Returned </button>
                     </form>
                   {% else %}
                     <span class="text-muted">Not Yours</span>

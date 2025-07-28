@@ -10,7 +10,7 @@ class BookForm(forms.ModelForm):
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = '__all__'
+        exclude = ['user']
 
 class BorrowedBookForm(forms.ModelForm):
     class Meta:

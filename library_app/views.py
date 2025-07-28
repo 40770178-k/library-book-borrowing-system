@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
@@ -116,6 +116,13 @@ def user_login(request):
             user = form.get_user()
             login(request, user)
             return redirect(request.GET.get('next', 'home'))  # To home or intended page
+        else:
+            if not User.objects.filter(username=form.cleaned_data['username']).exists():
+                messages.error(request, "No account found with that username.")
+                return redirect('signup')
+            else:
+                messages.error(request, "Invalid username or password.")
+                return redirect('login')
     else:
         form = AuthenticationForm()
 
@@ -124,14 +131,30 @@ def user_login(request):
 # Signup
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('home')  # If already logged in, go to home
+        return redirect('home')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            return redirect('login')  # After signup, go to login
+        user_form = UserCreationForm(request.POST)
+        member_form = MemberForm(request.POST)
+        if user_form.is_valid() and member_form.is_valid():
+            user = user_form.save()
+            member = member_form.save(commit=False)
+            member.user = user
+            member.save()
+            login(request, user)
+            messages.success(request, "Signup successful!")
+            return redirect('home')
     else:
-        form = UserCreationForm()
+        user_form = UserCreationForm()
+        member_form = MemberForm()
 
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'signup.html', {
+        'form': user_form,
+        'member_form': member_form
+    })
+
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')

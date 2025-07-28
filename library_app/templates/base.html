@@ -37,6 +37,9 @@
     <a href="{% url 'add_member' %}">👤 Add Member</a>
     <a href="{% url 'add_BorrowedBook' %}">📖 Borrow Book</a>
     <a href="{% url 'borrowed_books_list' %}">📋 Borrowed Books</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>
+    {% endif %}
 </nav>
 
 <div class="container">
