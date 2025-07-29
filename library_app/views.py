@@ -10,6 +10,20 @@ from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from .forms import BookForm, MemberForm, BorrowedBookForm, signupForm
 from .models import BorrowedBook, Book, Member
+from functools import wraps
+
+def member_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        try:
+            request.member = Member.objects.get(user=request.user)
+        except Member.DoesNotExist:
+            messages.error(request, "You need to create a member profile first.")
+            return redirect('add_member')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 # Home Page
 @login_required
@@ -40,16 +54,9 @@ def add_member(request):
 
 # Add Borrowed Book
 @login_required
+@member_required
 def add_BorrowedBook(request):
-    # Check if user has a member profile
-    try:
-        member = Member.objects.get(user=request.user)
-        print(f"User's member profile: {member.fullname}")
-    except Member.DoesNotExist:
-        print("User does not have a member profile")
-        messages.error(request, "You need to create a member profile first.")
-        return redirect('add_member')
-    
+    member = request.member
     if request.method == 'POST':
         form = BorrowedBookForm(request.POST)
         if form.is_valid():
@@ -87,12 +94,9 @@ def add_BorrowedBook(request):
 # Return Borrowed Book
 @require_POST
 @login_required
+@member_required
 def return_book(request, borrowed_book_id):
-    try:
-        member = Member.objects.get(user=request.user)
-    except Member.DoesNotExist:
-        return redirect('signup')
-
+    member = request.member
     borrowed_book = get_object_or_404(BorrowedBook, id=borrowed_book_id)
 
     if borrowed_book.member != member:
@@ -113,7 +117,9 @@ def return_book(request, borrowed_book_id):
 
 # Borrowed Books List
 @login_required
+@member_required
 def borrowed_books_list(request):
+    member = request.member
     # Debug: Print user info
     print(f"User: {request.user}")
     print(f"User is authenticated: {request.user.is_authenticated}")
@@ -181,29 +187,60 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 # Signup
+from .forms import signupForm
+
+def sync_username_with_fullname(user):
+    try:
+        member = Member.objects.get(user=user)
+        user.username = member.fullname
+        user.save()
+    except Member.DoesNotExist:
+        pass
+
+
 def signup(request):
     if request.user.is_authenticated:
         return redirect('home')
 
     if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
+        user_form = signupForm(request.POST)
         member_form = MemberForm(request.POST)
         if user_form.is_valid() and member_form.is_valid():
-            user = user_form.save()
             member = member_form.save(commit=False)
+            user = user_form.save(commit=False)
+            user.username = member.fullname  # Set username to full name
+            user.save()
             member.user = user
             member.save()
             login(request, user)
             messages.success(request, "Signup successful!")
             return redirect('home')
     else:
-        user_form = UserCreationForm()
+        user_form = signupForm()
         member_form = MemberForm()
 
     return render(request, 'signup.html', {
         'form': user_form,
         'member_form': member_form
     })
+
+# Edit Member Profile (sync username with fullname)
+@login_required
+@member_required
+def edit_member(request):
+    member = request.member
+    if request.method == 'POST':
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            member = form.save()
+            user = member.user
+            user.username = member.fullname
+            user.save()
+            messages.success(request, "Profile updated!")
+            return redirect('home')
+    else:
+        form = MemberForm(instance=member)
+    return render(request, 'edit_member.html', {'form': form})
 
 
 def user_logout(request):

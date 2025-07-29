@@ -1,6 +1,7 @@
 from django import forms
-from .models import Book,Member,BorrowedBook
+from .models import Book, Member, BorrowedBook
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 class BookForm(forms.ModelForm):
     class Meta:
@@ -21,18 +22,10 @@ class BorrowedBookForm(forms.ModelForm):
             'book': forms.Select(attrs={'class': 'form-control'}),
         }
 
-class signupForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
+class signupForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-        if commit:
-            user.save()
-        return user
+        fields = ['password1', 'password2']
 
 
         
