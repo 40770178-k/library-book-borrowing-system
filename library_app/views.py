@@ -233,3 +233,13 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', {'borrowed_books': borrowed_books, 'now': timezone.now(), 'filter_type': filter_type})
 
 
+def available_books(request):
+    books = Book.objects.filter(available_copies__gt=0).order_by('title')
+    
+    # Debug: Print available books count
+    print(f"Available books count: {books.count()}")
+    
+    if not books:
+        messages.info(request, "No available books found.")
+    
+    return render(request, 'available_books.html', {'books': books})
