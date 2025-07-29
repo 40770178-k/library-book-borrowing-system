@@ -15,9 +15,10 @@ class MemberForm(forms.ModelForm):
 class BorrowedBookForm(forms.ModelForm):
     class Meta:
         model = BorrowedBook
-        fields = '__all__'
+        fields = ['member', 'book']  # Only allow selection of member and book
         widgets = {
-            'borrowdate': forms.DateInput(attrs={'type': 'date'}),
+            'member': forms.Select(attrs={'class': 'form-control'}),
+            'book': forms.Select(attrs={'class': 'form-control'}),
         }
 
 class signupForm(forms.ModelForm):

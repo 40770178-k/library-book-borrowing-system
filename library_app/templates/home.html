@@ -1,6 +1,86 @@
 {% extends 'base.html' %}
 
+{% block title %}Home - Library Management System{% endblock %}
+
 {% block content %}
-<h1>Welcome to the Library System</h1>
-<p>Select an option from the navigation above to get started.</p>
+<div class="page-header">
+    <h1><i class="fas fa-book-open"></i> Welcome to the Library Management System</h1>
+    <p class="subtitle">Manage your library collection, members, and borrowing records efficiently</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-plus-circle"></i> Add New Book
+            </div>
+            <div class="card-body text-center">
+                <p>Add new books to your library collection</p>
+                <a href="{% url 'add_book' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Book
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-plus"></i> Add New Member
+            </div>
+            <div class="card-body text-center">
+                <p>Register new library members</p>
+                <a href="{% url 'add_member' %}" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Add Member
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-book"></i> Borrow Book
+            </div>
+            <div class="card-body text-center">
+                <p>Process book borrowing requests</p>
+                <a href="{% url 'add_BorrowedBook' %}" class="btn btn-warning">
+                    <i class="fas fa-book"></i> Borrow Book
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list"></i> View Borrowed Books
+            </div>
+            <div class="card-body text-center">
+                <p>Check current borrowing status and return books</p>
+                <a href="{% url 'borrowed_books_list' %}" class="btn btn-info">
+                    <i class="fas fa-list"></i> View Records
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_staff %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i> Admin Dashboard
+            </div>
+            <div class="card-body text-center">
+                <p>Access administrative functions and reports</p>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-danger">
+                    <i class="fas fa-chart-bar"></i> Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

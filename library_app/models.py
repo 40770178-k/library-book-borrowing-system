@@ -46,6 +46,6 @@ class BorrowedBook(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.returndate:
-            self.returndate = self.default_due_date()
+            self.returndate = default_due_date()
         super().save(*args, **kwargs)
 

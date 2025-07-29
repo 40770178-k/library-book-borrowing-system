@@ -1,59 +1,105 @@
 {% extends 'base.html' %}
 
-{% block content %}
-  <div class="container mt-4">
-    <h2>Borrowed Books List</h2>
+{% block title %}Borrowed Books - Library Management System{% endblock %}
 
-    {% if borrowed_books %}
-      <table class="table table-bordered table-striped mt-3">
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Book</th>
-            <th>Borrow Date</th>
-            <th>Due Date</th>
-            <th>Return Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for borrow in borrowed_books %}
-            <tr>
-              <td>{{ borrow.member.fullname }}</td>
-              <td>{{ borrow.book.title }}</td>
-              <td>{{ borrow.borrow_date }}</td>
-              <td>{{ borrow.due_date }}</td>
-              <td>
-                {% if borrow.is_returned %}
-                  Returned on {{ borrow.returndate }}
-                {% else %}
-                  {% if borrow.due_date < now %}
-                    <span class="badge bg-danger">Overdue (Due {{ borrow.due_date|date:"M d" }})</span>
-                  {% else %}
-                    <span class="text-warning">Not Returned (Due {{ borrow.due_date|date:"M d" }})</span>
-                  {% endif %}
-                {% endif %}
-              </td>
-              <td>
-                {% if not borrow.is_returned %}
-                  {% if borrow.member.user == request.user %}
-                    <form action="{% url 'return_book' borrow.pk %}" method="post" style="display:inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-success"> Mark as Returned </button>
-                    </form>
-                  {% else %}
-                    <span class="text-muted">Not Yours</span>
-                  {% endif %}
-                {% else %}
-                  <span class="text-muted">Completed</span>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No borrowed books found.</p>
-    {% endif %}
-  </div>
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-list"></i> Borrowed Books List</h1>
+    <p class="subtitle">View and manage borrowed books</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if borrowed_books %}
+    <!-- Debug info -->
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Found {{ borrowed_books|length }} borrowed books
+    </div>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user"></i> Member</th>
+                    <th><i class="fas fa-book"></i> Book</th>
+                    <th><i class="fas fa-calendar-plus"></i> Borrow Date</th>
+                    <th><i class="fas fa-calendar-check"></i> Due Date</th>
+                    <th><i class="fas fa-info-circle"></i> Return Status</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrow in borrowed_books %}
+                    <tr>
+                        <td>
+                            <strong>{{ borrow.member.fullname }}</strong>
+                            <br><small class="text-muted">{{ borrow.member.email }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ borrow.book.title }}</strong>
+                            <br><small class="text-muted">by {{ borrow.book.author }}</small>
+                        </td>
+                        <td>{{ borrow.borrowdate|date:"M d, Y" }}</td>
+                        <td>{{ borrow.due_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if borrow.is_returned %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Returned
+                                </span>
+                                <br><small class="text-muted">{{ borrow.returndate|date:"M d, Y" }}</small>
+                            {% else %}
+                                {% if borrow.due_date < now %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-exclamation-triangle"></i> Overdue
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock"></i> Not Returned
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not borrow.is_returned %}
+                                {% if borrow.member.user == request.user %}
+                                    <form action="{% url 'return_book' borrow.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to return this book?')">
+                                            <i class="fas fa-undo"></i> Return Book
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <i class="fas fa-lock"></i> Not Yours
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-success">
+                                    <i class="fas fa-check-circle"></i> Completed
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No borrowed books found.
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
 {% endblock %}

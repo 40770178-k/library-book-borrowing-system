@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Library Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-chart-bar"></i> Admin Dashboard</h1>
+    <p class="subtitle">Manage library borrowing records</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="filter-buttons">
+    <a href="{% url 'admin_dashboard' %}" class="filter-btn {% if not filter_type %}active{% endif %}">
+        <i class="fas fa-list"></i> All Records
+    </a>
+    <a href="{% url 'admin_dashboard' %}?filter=not_returned" class="filter-btn {% if filter_type == 'not_returned' %}active{% endif %}">
+        <i class="fas fa-clock"></i> Not Returned Only
+    </a>
+</div>
+
+{% if borrowed_books %}
+    <!-- Debug info -->
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Found {{ borrowed_books|length }} borrowed books
+    </div>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user"></i> Member</th>
+                    <th><i class="fas fa-book"></i> Book</th>
+                    <th><i class="fas fa-calendar-plus"></i> Borrow Date</th>
+                    <th><i class="fas fa-calendar-check"></i> Due Date</th>
+                    <th><i class="fas fa-info-circle"></i> Return Status</th>
+                    <th><i class="fas fa-cogs"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in borrowed_books %}
+                    <tr>
+                        <td>
+                            <strong>{{ record.member.fullname }}</strong>
+                            <br><small class="text-muted">{{ record.member.email }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ record.book.title }}</strong>
+                            <br><small class="text-muted">by {{ record.book.author }}</small>
+                        </td>
+                        <td>{{ record.borrowdate|date:"M d, Y" }}</td>
+                        <td>{{ record.due_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if record.is_returned %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Returned
+                                </span>
+                                <br><small class="text-muted">{{ record.returndate|date:"M d, Y" }}</small>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock"></i> Not Returned
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not record.is_returned %}
+                                <form method="post" action="{% url 'mark_as_returned' record.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to mark this book as returned?')">
+                                        <i class="fas fa-undo"></i> Mark as Returned
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">
+                                    <i class="fas fa-check-circle"></i> Already returned
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No borrowed books found.
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
+{% endblock %}
