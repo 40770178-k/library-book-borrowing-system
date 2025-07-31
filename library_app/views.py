@@ -280,3 +280,16 @@ def available_books(request):
         messages.info(request, "No available books found.")
     
     return render(request, 'available_books.html', {'books': books})
+
+@login_required
+def my_borrowed_books(request):
+    user = request.user
+    borrowed_books = BorrowedBook.objects.filter(user=user, is_returned=False).select_related('book').order_by('-borrowdate')
+    
+    # Debug: Print user's borrowed books count
+    print(f"My borrowed books count: {borrowed_books.count()}")
+    
+    if not borrowed_books:
+        messages.info(request, "You have no borrowed books.")
+    
+    return render(request, 'my_borrowed_books.html', {'borrowed_books': borrowed_books, 'now': timezone.now()})

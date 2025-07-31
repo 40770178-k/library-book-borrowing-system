@@ -17,4 +17,5 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('available-books/', views.available_books, name='available_books'),
     path('edit-member/', views.edit_member, name='edit_member'),
+    path('my_borrowed_books/', views.my_borrowed_books, name='my_borrowed_books'),
 ]

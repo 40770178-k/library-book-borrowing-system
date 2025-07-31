@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>My Borrowed Books</h2>
+
+  {% if borrowed_books %}
+    <table class="table table-bordered table-striped mt-3">
+      <thead>
+        <tr>
+          <th>Book Title</th>
+          <th>Borrow Date</th>
+          <th>Return Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in borrowed_books %}
+          <tr>
+            <td>{{ record.book.title }}</td>
+            <td>{{ record.borrow_date }}</td>
+            <td>
+              {% if record.returned %}
+                Returned
+              {% else %}
+                Not Returned
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You haven’t borrowed any books yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
