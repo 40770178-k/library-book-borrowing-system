@@ -3,86 +3,81 @@
 {% block title %}Add Book - Library Management System{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1><i class="fas fa-plus-circle"></i> Add a New Book</h1>
-    <p class="subtitle">Add a new book to the library collection</p>
+<div class="mb-4">
+    <h2><i class="fas fa-plus-circle"></i> Add a New Book</h2>
+    <p class="text-muted">Add a new book to the library collection</p>
 </div>
 
-<div class="form-container">
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-book"></i> Book Information
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <div class="form-group">
-                    <label for="{{ form.title.id_for_label }}" class="form-label">
-                        <i class="fas fa-book"></i> Book Title
-                    </label>
-                    {{ form.title }}
-                    {% if form.title.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.title.errors }}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.author.id_for_label }}" class="form-label">
-                        <i class="fas fa-user"></i> Author
-                    </label>
-                    {{ form.author }}
-                    {% if form.author.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.author.errors }}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.total_copies.id_for_label }}" class="form-label">
-                        <i class="fas fa-copy"></i> Total Copies
-                    </label>
-                    {{ form.total_copies }}
-                    {% if form.total_copies.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.total_copies.errors }}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.available_copies.id_for_label }}" class="form-label">
-                        <i class="fas fa-check-circle"></i> Available Copies
-                    </label>
-                    {{ form.available_copies }}
-                    {% if form.available_copies.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.available_copies.errors }}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus"></i> Add Book
-                    </button>
-                    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg ms-2">
-                        <i class="fas fa-arrow-left"></i> Back to Home
-                    </a>
-                </div>
-            </form>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-book"></i> Book Information
+            </div>
+
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- Book Title -->
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <i class="fas fa-book"></i> Book Title
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Author -->
+                    <div class="mb-3">
+                        <label for="{{ form.author.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> Author
+                        </label>
+                        {{ form.author }}
+                        {% if form.author.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.author.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Total Copies -->
+                    <div class="mb-3">
+                        <label for="{{ form.total_copies.id_for_label }}" class="form-label">
+                            <i class="fas fa-copy"></i> Total Copies
+                        </label>
+                        {{ form.total_copies }}
+                        {% if form.total_copies.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.total_copies.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Available Copies -->
+                    <div class="mb-4">
+                        <label for="{{ form.available_copies.id_for_label }}" class="form-label">
+                            <i class="fas fa-check-circle"></i> Available Copies
+                        </label>
+                        {{ form.available_copies }}
+                        {% if form.available_copies.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.available_copies.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="fas fa-plus"></i> Add Book
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

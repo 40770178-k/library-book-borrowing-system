@@ -35,7 +35,7 @@ def default_due_date():
 
 class BorrowedBook(models.Model):
     member=models.ForeignKey(Member,on_delete=models.CASCADE)
-    user=models.OneToOneField(User,on_delete=models.CASCADE,null=True, blank=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)
     book=models.ForeignKey(Book,on_delete=models.CASCADE)
     borrowdate=models.DateField(auto_now_add=True)
     returndate=models.DateField(null=True, blank=True)

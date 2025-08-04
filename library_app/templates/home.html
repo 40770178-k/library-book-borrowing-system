@@ -3,15 +3,15 @@
 {% block title %}Home - Library Management System{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header mb-4 text-center">
     <h1><i class="fas fa-book-open"></i> Welcome to the Library Management System</h1>
     <p class="subtitle">Manage your library collection, members, and borrowing records efficiently</p>
 </div>
 
 <div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-header">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
                 <i class="fas fa-plus-circle"></i> Add New Book
             </div>
             <div class="card-body text-center">
@@ -22,10 +22,10 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-header">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
                 <i class="fas fa-user-plus"></i> Add New Member
             </div>
             <div class="card-body text-center">
@@ -36,15 +36,15 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-header">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-white">
                 <i class="fas fa-book"></i> Borrow Book
             </div>
             <div class="card-body text-center">
                 <p>Process book borrowing requests</p>
-                <a href="{% url 'add_BorrowedBook' %}" class="btn btn-warning">
+                <a href="{% url 'add_BorrowedBook' %}" class="btn btn-warning text-white">
                     <i class="fas fa-book"></i> Borrow Book
                 </a>
             </div>
@@ -53,35 +53,37 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
                 <i class="fas fa-list"></i> View Borrowed Books
             </div>
             <div class="card-body text-center">
                 <p>Check current borrowing status and return books</p>
-                <a href="{% url 'borrowed_books_list' %}" class="btn btn-info">
+                <a href="{% url 'borrowed_books_list' %}" class="btn btn-info text-white">
                     <i class="fas fa-list"></i> View Records
                 </a>
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-users"></i> Available Books
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-secondary text-white">
+                <i class="fas fa-book-reader"></i> Available Books
             </div>
             <div class="card-body text-center">
                 <p>Browse books currently available in the library</p>
                 <a href="{% url 'available_books' %}" class="btn btn-secondary">
-                    <i class="fas fa-users"></i> Available Books
+                    <i class="fas fa-eye"></i> View Available
                 </a>
             </div>
         </div>
+    </div>
 
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
                 <i class="fas fa-user"></i> My Borrowed Books
             </div>
             <div class="card-body text-center">
@@ -91,11 +93,14 @@
                 </a>
             </div>
         </div>
-    
-    {% if user.is_staff %}
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">
+    </div>
+</div>
+
+{% if user.is_staff %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
                 <i class="fas fa-chart-bar"></i> Admin Dashboard
             </div>
             <div class="card-body text-center">
@@ -106,6 +111,7 @@
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
+{% endif %}
+
 {% endblock %}

@@ -3,64 +3,76 @@
 {% block title %}Borrow Book - Library Management System{% endblock %}
 
 {% block content %}
-<div class="page-header">
+
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Borrow Book</li>
+  </ol>
+</nav>
+
+<div class="page-header text-center mb-4">
     <h1><i class="fas fa-book"></i> Record a Borrowed Book</h1>
-    <p class="subtitle">Process a book borrowing request</p>
+    <p class="subtitle text-muted">Process a book borrowing request</p>
 </div>
 
-<div class="form-container">
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-handshake"></i> Borrowing Information
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <div class="form-group">
-                    <label for="{{ form.member.id_for_label }}" class="form-label">
-                        <i class="fas fa-user"></i> Member
-                    </label>
-                    {{ form.member }}
-                    {% if form.member.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.member.errors }}
-                        </div>
-                    {% endif %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <i class="fas fa-handshake"></i> Borrowing Information
                 </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.book.id_for_label }}" class="form-label">
-                        <i class="fas fa-book"></i> Book
-                    </label>
-                    {{ form.book }}
-                    {% if form.book.errors %}
-                        <div class="alert alert-danger mt-2">
-                            {{ form.book.errors }}
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.member.id_for_label }}" class="form-label">
+                                <i class="fas fa-user"></i> Member
+                            </label>
+                            {{ form.member }}
+                            {% if form.member.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.member.errors }}
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.book.id_for_label }}" class="form-label">
+                                <i class="fas fa-book"></i> Book
+                            </label>
+                            {{ form.book }}
+                            {% if form.book.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.book.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-warning btn-lg shadow-sm">
+                                <i class="fas fa-book"></i> Borrow Book
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary btn-lg ms-2">
+                                <i class="fas fa-arrow-left"></i> Back to Home
+                            </a>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="text-center">
-                    <button type="submit" class="btn btn-warning btn-lg">
-                        <i class="fas fa-book"></i> Borrow Book
-                    </button>
-                    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg ms-2">
-                        <i class="fas fa-arrow-left"></i> Back to Home
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
-    

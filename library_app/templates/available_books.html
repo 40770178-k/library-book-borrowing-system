@@ -1,23 +1,43 @@
 {% extends 'base.html' %}
+
+{% block title %}Available Books - Library Management System{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2>Available Books</h2>
-  {% if books %}
+<div class="page-header">
+    <h1><i class="fas fa-book-open"></i> Available Books</h1>
+    <p class="subtitle">Browse the books currently available in the library</p>
+</div>
+
+{% if books %}
     <div class="row">
-      {% for book in books %}
-        <div class="col-md-4 mb-3">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">{{ book.title }}</h5>
-              <p class="card-text">Author: {{ book.author }}</p>
-              <p class="card-text">Copies Available: {{ book.available_copies }}</p>
+        {% for book in books %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-book text-primary"></i> {{ book.title }}
+                        </h5>
+                        <p class="card-text">
+                            <i class="fas fa-user text-muted"></i> Author: <strong>{{ book.author }}</strong>
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-copy text-muted"></i> Copies Available: 
+                            <span class="badge bg-info">{{ book.available_copies }}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
     </div>
-  {% else %}
-    <p>No books available right now.</p>
-  {% endif %}
+{% else %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-circle"></i> No books are currently available.
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-outline-primary">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
 </div>
 {% endblock %}
