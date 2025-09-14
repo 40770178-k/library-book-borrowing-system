@@ -11,6 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .forms import BookForm, MemberForm, BorrowedBookForm, signupForm
 from .models import BorrowedBook, Book, Member
 from functools import wraps
+from .forms import signupForm
 
 def member_required(view_func):
     @wraps(view_func)
@@ -31,6 +32,7 @@ def home(request):
     return render(request, 'home.html')
 
 # Add Book
+@login_required
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -187,8 +189,6 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 # Signup
-from .forms import signupForm
-
 def sync_username_with_fullname(user):
     try:
         member = Member.objects.get(user=user)
