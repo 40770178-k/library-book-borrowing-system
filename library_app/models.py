@@ -49,3 +49,22 @@ class BorrowedBook(models.Model):
             self.returndate = default_due_date()
         super().save(*args, **kwargs)
 
+
+class Review(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(validators=[minvalidator(1)])
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('book', 'member')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.member.fullname} rated {self.book.title} {self.rating}/5"
+
+    def clean(self):
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5.')
