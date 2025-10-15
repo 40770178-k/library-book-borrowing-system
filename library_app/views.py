@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
@@ -8,10 +9,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
-from .forms import BookForm, MemberForm, BorrowedBookForm, signupForm
-from .models import BorrowedBook, Book, Member
+from .forms import BookForm, MemberForm, BorrowedBookForm, signupForm, ReviewForm
+from .models import BorrowedBook, Book, Member, Review
 from functools import wraps
-from .forms import signupForm
 
 def member_required(view_func):
     @wraps(view_func)
@@ -293,3 +293,40 @@ def my_borrowed_books(request):
         messages.info(request, "You have no borrowed books.")
     
     return render(request, 'my_borrowed_books.html', {'borrowed_books': borrowed_books, 'now': timezone.now()})
+
+
+# Book reviews: list + submit/update
+@login_required
+@member_required
+def book_reviews(request, book_id):
+    member = request.member
+    book = get_object_or_404(Book, pk=book_id)
+
+    # User's existing review if any
+    try:
+        user_review = Review.objects.get(book=book, member=member)
+    except Review.DoesNotExist:
+        user_review = None
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=user_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = book
+            review.member = member
+            review.save()
+            messages.success(request, 'Your review has been saved.')
+            return redirect('book_reviews', book_id=book.id)
+    else:
+        form = ReviewForm(instance=user_review)
+
+    reviews = Review.objects.filter(book=book).select_related('member')
+    avg_rating = reviews.aggregate(models.Avg('rating')).get('rating__avg') if reviews else None
+
+    return render(request, 'book_reviews.html', {
+        'book': book,
+        'form': form,
+        'reviews': reviews,
+        'avg_rating': avg_rating,
+        'user_review': user_review,
+    })
