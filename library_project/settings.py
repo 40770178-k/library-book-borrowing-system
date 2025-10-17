@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'library_app',
-    'widget_tweaks',  # Your custom app for library management    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
